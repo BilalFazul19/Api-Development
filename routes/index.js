@@ -1,4 +1,4 @@
-const express = require ('express');
+const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
 
@@ -46,7 +46,7 @@ router.put('/update/:id', async (req, res) => {
 // Delete a product by ID
 router.delete('/delete/:id', async (req, res) => {
   try {
-    const removedProduct = await     Product.findByIdAndDelete(req.params.id);
+    const removedProduct = await Product.findByIdAndDelete(req.params.id);
     res.json(removedProduct);
   } catch (error) {
     res.status(400).json({ message: error.message });

@@ -1,23 +1,41 @@
-// Import required modules
 const express = require('express');
-//const { mongo, default: mongoose } = require('mongoose');
-const mongoose = require('mongoose')
-const bodyparser = require('body-parser');
-
-const ProductRoutes = require('./routes/index.js')
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const productRoute = require('./routes/index');
 
 const app = express();
 
-app.use(bodyparser.json());
-app.use(ProductRoutes)
+app.use(cors());
+app.use(bodyParser.json());
+app.use('/api', productRoute); // Prefix all routes with /api
 
-mongoose.connect("mongodb://localhost:27017/Shopping",{}).then(()=>{
-  console.log("Connected  succesfully");
-}).catch((err)=>{
-    console.log("Error !", err);
+mongoose.connect('mongodb+srv://maju:bilal@cluster0.b4tlg0l.mongodb.net/Shopping', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => {
+    console.log('Connected to MongoDB');
   })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+  });
 
-// Start the server
+app.use((req, res, next) => {
+  const error = new Error('Not found');
+  error.status = 404;
+  next(error);
+});
+
+app.use((error, req, res, next) => {
+  res.status(error.status || 500);
+  res.json({
+    error: {
+      message: error.message
+    }
+  });
+});
+
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
